@@ -49,6 +49,8 @@
     _nbr05 = @[@"0",@"1",@"2",@"3",@"4",@"5",@"6",@"7",@"8",@"9"];
     
      self.pkrNumberPicker.delegate = self;
+    [_pkrNumberPicker setHidden:YES];
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -57,7 +59,7 @@
 }
 - (IBAction)segGamePicked:(id)sender {
     pix = _segPicker.selectedSegmentIndex +2;
-    [_pkrNumberPicker reloadAllComponents];
+    [_pkrNumberPicker setHidden:NO];
      self.pkrNumberPicker.delegate = self;
 /*
 #pragma mark - Navigation

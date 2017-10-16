@@ -13,9 +13,13 @@
 {
     UIColor *white;
     UIColor *blue;
+    UIColor *black;
+    UIColor *gold;
     bool toggle[53];
     int picked[6];
     bool noBalls;
+    bool noGoldBalls;
+    bool goldToggle[17];
     int numBalls;
     int numPicks;
     int numGold;
@@ -23,6 +27,7 @@
 
 @property (strong, nonatomic) IBOutletCollection(UIButton) NSMutableArray *ball;
 @property (strong, nonatomic) IBOutletCollection(UILabel) NSMutableArray *lblPicked;
+@property (strong, nonatomic) IBOutletCollection(UIButton) NSMutableArray *goldBalls;
 @property (weak, nonatomic) IBOutlet UIButton *btn01;
 @property (weak, nonatomic) IBOutlet UIButton *btn02;
 @property (weak, nonatomic) IBOutlet UIButton *btn03;
@@ -77,9 +82,25 @@
 @property (weak, nonatomic) IBOutlet UIButton *btn52;
 @property (weak, nonatomic) IBOutlet UIButton *btn53;
 @property (weak, nonatomic) IBOutlet UIButton *btnPickForMe;
+@property (weak, nonatomic) IBOutlet UIButton *goldBall01;
+@property (weak, nonatomic) IBOutlet UIButton *goldBall02;
+@property (weak, nonatomic) IBOutlet UIButton *goldBall03;
+@property (weak, nonatomic) IBOutlet UIButton *goldBall04;
+@property (weak, nonatomic) IBOutlet UIButton *goldBall05;
+@property (weak, nonatomic) IBOutlet UIButton *goldBall06;
+@property (weak, nonatomic) IBOutlet UIButton *goldBall07;
+@property (weak, nonatomic) IBOutlet UIButton *goldBall08;
+@property (weak, nonatomic) IBOutlet UIButton *goldBall09;
+@property (weak, nonatomic) IBOutlet UIButton *goldBall10;
+@property (weak, nonatomic) IBOutlet UIButton *goldBall11;
+@property (weak, nonatomic) IBOutlet UIButton *goldBall12;
+@property (weak, nonatomic) IBOutlet UIButton *goldBall13;
+@property (weak, nonatomic) IBOutlet UIButton *goldBall14;
+@property (weak, nonatomic) IBOutlet UIButton *goldBall15;
+@property (weak, nonatomic) IBOutlet UIButton *goldBall16;
+@property (weak, nonatomic) IBOutlet UIButton *goldBall17;
 @property (weak, nonatomic) IBOutlet UILabel *lblDisplay;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *segPickGame;
-
 @property (weak, nonatomic) IBOutlet UILabel *lblPicked01;
 @property (weak, nonatomic) IBOutlet UILabel *lblPicked02;
 @property (weak, nonatomic) IBOutlet UILabel *lblPicked03;
@@ -87,7 +108,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *lblPicked05;
 @property (weak, nonatomic) IBOutlet UILabel *lblPicked06;
 @property (weak, nonatomic) IBOutlet UILabel *lblPickedGold;
-
 @end
 
 @implementation weekliesViewController
@@ -97,17 +117,25 @@
   
         white = [[UIColor alloc] initWithRed:1.0 green: 1.0 blue: 1.0 alpha: 1.0];
         blue = [[UIColor alloc] initWithRed:0.1 green: 1.0 blue: 0.9 alpha: 1.0];
+    black = [[UIColor alloc] initWithRed:0 green: 0 blue: 0 alpha: 1.0];
+    gold = [[UIColor alloc] initWithRed:1 green: 0.792 blue: 0 alpha: 1.0];
     _lblDisplay.text = @"First, Pick your game";
-     //[_lblDisplay setBackgroundColor:white];
+
      [[_lblDisplay layer] setCornerRadius: 15];
-     [[_lblDisplay layer] setBorderColor:[UIColor blackColor].CGColor];
-     [[_lblDisplay layer] setBorderWidth:0.8f];
+    [[_lblDisplay layer] setBorderColor:[UIColor blackColor].CGColor];
+     [[_lblDisplay layer] setMasksToBounds:YES];
+    [[_btnPickForMe layer] setBorderColor:[UIColor blackColor].CGColor];
+    [[_btnPickForMe layer] setCornerRadius:15];
+    [[_btnPickForMe layer] setBorderWidth:0.8f];
+    [[_btnPickForMe layer] setMasksToBounds:YES];
+
+//     [[_lblDisplay layer] setBorderColor: black.CGColor];
+    [[_lblDisplay layer] setBorderWidth:0.8f];
         noBalls = YES;
+    noGoldBalls = YES;
         numBalls = 53;
         numPicks = 6;
         numGold = 1;
-    [[_ball[18] layer] setBorderColor:[UIColor blueColor].CGColor];
-    
         [self gameSetUp];
     
     
@@ -128,8 +156,19 @@
          [_ball[y] setEnabled: NO];
         [_ball[y] setHidden:YES];
     }
+    for (int z=0;z<numGold;z++)
+    {
+        goldToggle[z] = NO;
+        [_goldBalls[z] setBackgroundColor:white];
+        [[_goldBalls[z] layer] setCornerRadius: 15];
+        [[_goldBalls[z] layer] setBorderColor:[UIColor blackColor].CGColor];
+        [[_goldBalls[z] layer] setBorderWidth:0.8f];
+        [_goldBalls[z] setEnabled: NO];
+        [_goldBalls[z] setHidden:YES];
+    }
 
     [self basketOfPicked];
+    [_btnPickForMe setHidden:YES];
     //[self displayBasket];
     //[self killBalls];
 }
@@ -161,6 +200,13 @@
         [_ball[x] setEnabled: NO];
         [_ball[x] setHidden:YES];
     }
+    for (int x=0;x<17;x++)
+    {
+        goldToggle[x]=NO;
+        [_goldBalls[x] setBackgroundColor:gold];
+        [_ball[x] setEnabled: NO];
+        [_ball[x] setHidden:YES];
+    }
 }
 -(void)killBalls
 {
@@ -184,13 +230,33 @@
             }
         }
     }
+    if(noGoldBalls)
+    {
+        for (int i=0;i<numGold;i++)
+        {
+            if (!goldToggle[i])
+            {[_goldBalls[i] setEnabled: NO];
+                [_goldBalls[i] setHidden:YES];
+            }
+        }
+    }
+    else
+    {
+        for (int i=0;i<numBalls;i++)
+        {
+            if (!goldToggle[i])
+            {[_goldBalls[i] setEnabled: YES];
+                [_goldBalls[i] setHidden: NO];
+            }
+        }
+    }
 }
 -(void)basketOfPicked
 {
     [self resetPickers];
     NSLog(@"Basket Of Picked");
     int y=0;
-    for (int x=0; x<numBalls-1; x++)
+    for (int x=0; x<numBalls; x++)
     {
         if (y==numPicks){
             noBalls = YES;
@@ -293,7 +359,32 @@
     for (int j=0;j<6;j++)
     {
         _lblPicked[j] = lblPickedSet[j];
-    }}
+    }
+    NSMutableArray *goldBallSet = [[NSMutableArray alloc] initWithObjects:
+                             _goldBall01,
+                             _goldBall02,
+                               _goldBall03,
+                               _goldBall04,
+                               _goldBall05,
+                               _goldBall06,
+                                 _goldBall07,
+                                 _goldBall08,
+                                 _goldBall09,
+                                 _goldBall10,
+                                 _goldBall11,
+                                 _goldBall12,
+                                 _goldBall13,
+                                 _goldBall14,
+                                 _goldBall15,
+                                 _goldBall16,
+                                 _goldBall17,                               nil];
+    for (int j=0;j<17;j++)
+    {
+        _goldBalls[j] = goldBallSet[j];
+    }
+    
+    
+}
 - (IBAction)toggle_btn01:(id)sender
 {
     for (int i=0;i<numBalls;i++){NSLog(@"%d: toggle=%d    Button=%@",i,toggle[i],_ball[i]);}
@@ -320,7 +411,7 @@
     
 }
 - (IBAction)segPickGame:(id)sender {
-    _lblDisplay.text = @"Now, Pick your numbers or let me pick them for you";
+    [_btnPickForMe setHidden:NO];    _lblDisplay.text = @"Now, Pick your numbers or let me pick them for you";
     numBalls = 53;
     numPicks = 6;
     [self resetPickers];
@@ -357,6 +448,76 @@
             [_ball[i] setEnabled:YES];
     }
 }
+-(int)randomNumber:(int)max
+{
+    int rand=0;
+    NSInteger x3=0;
+    NSInteger x1 = CFAbsoluteTimeGetCurrent() ;
+    NSString *x2 = [NSString stringWithFormat:@"%ld",(long)x1];
+    
+    for (int i = 0;i<x2.length;i++)
+    {
+        x3 = x3 + [[NSString stringWithFormat:@"%c", [x2 characterAtIndex:(i)]] integerValue];
+    }
+    int crank[x3];
+    for (int i2 = 0; i2 < x3;i2++)
+    {crank[i2] = arc4random() % x3;}
+    for (int i3 = 0; i3 < x3; i3++)
+
+    {for (int i4 = 0; i4<crank[i3];i4++){rand=1 + arc4random() % (max-1);}}
+    
+    //NSLog (@"%ld - %ld - %ld",(long)max,(long)rand,(long)x3);
+
+    
+    
+    return rand;
+}
+- (IBAction)actButtonPickForMe:(id)sender {
+    NSLog(@"------------------picking Randoms -----------");
+    bool repeat=NO;
+//Reset Picks
+    for (int p=0;p<numPicks;p++){picked[p]=0;}
+//Reset Toggles
+    for (int t=0;t<numBalls;t++){toggle[t]=NO;}
+// clear ball board
+    [self resetBalls];
+//assign randoms
+    for (int i=0;i<numPicks;i++)
+    {
+        int newBall = [self randomNumber:numBalls];
+        NSLog(@"%d",newBall);
+        if (toggle[newBall-1])
+        {
+            i--; // Do it again
+        }
+        else
+        {
+            toggle[newBall-1]=YES; // Keep the ball (turn it "on")
+        }
+    }
+    [self basketOfPicked];
+    [self showPickedBalls];
+    [self displayBasket];
+}
+-(void)showPickedBalls
+{
+    for (int t=1;t<=numBalls;t++)
+    {
+        if (toggle[t]){
+                [_ball[t] setBackgroundColor:blue];
+                [_ball[t] setEnabled: YES];
+                [_ball[t] setHidden:NO];
+            }
+        else
+        {
+            [_ball[t] setBackgroundColor:white];
+            [_ball[t] setEnabled: NO];
+            [_ball[t] setHidden:YES];
+        }
+        }
+    }
+
+
 
 @end
 
