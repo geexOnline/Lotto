@@ -135,7 +135,7 @@
     noGoldBalls = YES;
         numBalls = 53;
         numPicks = 6;
-        numGold = 1;
+        numGold = 17;
         [self gameSetUp];
     
     
@@ -200,13 +200,14 @@
         [_ball[x] setEnabled: NO];
         [_ball[x] setHidden:YES];
     }
-    for (int x=0;x<17;x++)
+    for (int y=0;y<17;y++)
     {
-        goldToggle[x]=NO;
-        [_goldBalls[x] setBackgroundColor:gold];
-        [_ball[x] setEnabled: NO];
-        [_ball[x] setHidden:YES];
-    }
+        goldToggle[y]=NO;
+        [_goldBalls[y] setBackgroundColor:gold];
+        [_goldBalls[y] setEnabled: NO];
+        [_goldBalls[y] setHidden:YES];
+        
+    }noGoldBalls = YES;
 }
 -(void)killBalls
 {
@@ -242,7 +243,7 @@
     }
     else
     {
-        for (int i=0;i<numBalls;i++)
+        for (int i=0;i<numGold;i++)
         {
             if (!goldToggle[i])
             {[_goldBalls[i] setEnabled: YES];
@@ -260,6 +261,7 @@
     {
         if (y==numPicks){
             noBalls = YES;
+            noGoldBalls = NO;
             return;}
         if (toggle[x])
         {
@@ -408,18 +410,54 @@
     NSLog(@"Got To displayBasket");
     [self displayBasket];
     [self killBalls];
+    if (!noGoldBalls)
+    {
+        for (UIButton *gb in _goldBalls)
+        {[gb setEnabled: YES];}
+        
+    }
     
 }
+- (IBAction)toggle_goldbtn:(id)sender
+{
+    NSInteger zz = [[(UIButton *)sender currentTitle] integerValue] -1;
+    if(goldToggle[zz])
+    {
+        goldToggle[zz]=NO;
+        [_goldBalls[zz] setBackgroundColor:gold];
+    }
+    else
+    {
+        goldToggle[zz]=YES;
+        [_goldBalls[zz] setBackgroundColor:blue];
+    }
+    //[self basketOfPickedGold];
+    NSLog(@"Got To displayBasket");
+    [self displayBasket];
+    [self killBalls];
+    
+    if (!noGoldBalls)
+    {
+        for (UIButton *gb in _goldBalls)
+        {[gb setEnabled: YES];}
+        
+    }
+    
+}
+
+
 - (IBAction)segPickGame:(id)sender {
     [_btnPickForMe setHidden:NO];    _lblDisplay.text = @"Now, Pick your numbers or let me pick them for you";
     numBalls = 53;
     numPicks = 6;
+    numGold = 17;
     [self resetPickers];
     [self basketOfPicked];
     [self displayBasket];
     [self resetBalls];
     numBalls = 0;
     numPicks = 0;
+    numGold = 0;
     
     switch(_segPickGame.selectedSegmentIndex)
     {
@@ -432,6 +470,7 @@
             numBalls = 47;
             numPicks = 4;
             numGold = 17;
+            noGoldBalls = NO;
             break;
         case 2: //Lotto
             numBalls = 53;
@@ -446,6 +485,11 @@
     {
             [_ball[i] setHidden:NO];
             [_ball[i] setEnabled:YES];
+    }
+    for (int i=0;i<numGold;i++)
+    {
+        [_goldBalls[i] setHidden:NO];
+        [_goldBalls[i] setEnabled:NO]; //gotta pick regular balls first.
     }
 }
 -(int)randomNumber:(int)max
@@ -474,7 +518,6 @@
 }
 - (IBAction)actButtonPickForMe:(id)sender {
     NSLog(@"------------------picking Randoms -----------");
-    bool repeat=NO;
 //Reset Picks
     for (int p=0;p<numPicks;p++){picked[p]=0;}
 //Reset Toggles
